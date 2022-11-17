@@ -23,8 +23,8 @@ jobs:
         uses: jaywcjlove/github-action-package@main
         id: package-info
       - name: create-release
-        uses: freight-hub/action-create-release@v1
+        uses: freight-hub/action-create-release@v1.1
         with:
           tag: ${{ steps.package-info.outputs.version }}
-          github_secret: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 

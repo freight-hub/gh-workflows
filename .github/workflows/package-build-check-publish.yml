@@ -21,10 +21,10 @@ jobs:
           token: ${{ secrets.token }}
       - name: bump-version-from-tag
         id: tag
-        uses: freight-hub/action-tag-bump-version@v1.2
+        uses: freight-hub/action-tag-bump-version@v1.3
         with:
           build_number: ${{ github.run_number }}
-          github_secret: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           fallback_tag: 0.0.1
       # set the new_version on package.json
       - run: yarn version --new-version ${{ steps.tag.outputs.new_version }} --no-git-tag-version
