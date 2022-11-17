@@ -1,8 +1,7 @@
 # This workflow will trigger, but only add the status check after the CI check has run
 name: "[PR] Build, check and publish"
 
-on:
-  workflow_call:
+on: workflow_call
 
 jobs:
   pre-release:
@@ -10,6 +9,6 @@ jobs:
     name: Publish pre-release version
     runs-on: ubuntu-latest
     # Commit message must be same as `package-build-check-publish.yml`
-    if: github.event.head_commit.message == '[BUMP] Update package.json to next stable version'
+    if: github.event.head_commit.message == '[skip ci] Update package.json to next stable version'
     steps:
       - run: 'echo "No build required"'
