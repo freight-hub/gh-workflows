@@ -3,8 +3,6 @@ name: "[Main] Build, check and publish"
 on:
   workflow_call:
     secrets:
-      GITHUB_TOKEN:
-        required: true
       VERDACCIO_FORTO_IO_TOKEN:
         required: true
 
