@@ -6,7 +6,7 @@ on:
       VERDACCIO_FORTO_IO_TOKEN:
         required: true
       token:
-        required: false
+        required: true
 
 env:
   VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}

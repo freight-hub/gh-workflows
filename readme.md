@@ -7,3 +7,90 @@ More information on reusable workflows can be found [here](https://docs.github.c
 ## Public
 
 Please keep in mind that this is a public repository.
+
+# Node workflows
+
+## node-build-lint-test.yml
+
+Basic worfkflow for nodejs.
+
+
+# Package workflows
+
+## package-build-check-publish.yml
+
+Will publish the package based on the new SemVer found within the repository (tags).
+
+If this is a required build step, you should pass in a PAT because the default `secrets.GITHUB_TOKEN` will NOT trigger the a workflow (to prevent recurisive flows).
+We explicitly want this because we update the `package.json` with the newer version and need the required checks to pass.
+
+### Usage:
+
+```yaml
+name: "[PR] Build, check and publish"
+
+on:
+  pull_request:
+    types: [labeled, opened, reopened, synchronize, edited]
+    branches:
+      - main
+    paths:
+      - '.github/workflows/**'
+      - 'src/**'
+      - 'yarn.lock'
+
+jobs:
+  pre-release:
+    uses: freight-hub/gh-workflows/.github/workflows/package-build-check-publish.yml@main
+    secrets:
+      VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
+      # We need to pass the GH token here, as we would like the commit to trigger the pipeline again
+      # to make sure we pass the required action
+      token: ${{ secrets.GH_PAT_FREIGHTBOT }}
+```
+
+
+## package-build-check-publish-ignore.yml
+
+A empty file used to pass the required checks when `package.json` has been updated from the previous command.
+
+
+### Usage:
+
+```yaml
+# This workflow will trigger, but only add the status check after the CI check has run
+name: "[PR] Build, check and publish"
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+
+jobs:
+  pre-release:
+    uses: freight-hub/gh-workflows/.github/workflows/package-build-check-publish-ignore.yml@main
+```
+
+## package-publish.yml
+
+Will install, build and publish the package with the version from package.json. Will create a new release with tag.
+
+### Usage:
+
+```yaml
+name: "[Main] Build, check and publish"
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  publish-main:
+    uses: freight-hub/gh-workflows/.github/workflows/package-publish-main.yml@main
+    secrets: inherit
+```
