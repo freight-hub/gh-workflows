@@ -1,14 +1,12 @@
 name: "[PR] Build, check and publish"
 
 on:
-  pull_request:
-    types: [labeled, opened, reopened, synchronize]
-    branches:
-      - main
-    paths:
-      - '.github/workflows/**'
-      - 'src/**'
-      - 'yarn.lock'
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+      VERDACCIO_FORTO_IO_TOKEN:
+        required: true
 
 env:
   VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
@@ -21,7 +19,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: bump-version-from-tag
         id: tag
-        uses: freight-hub/action-tag-bump-version@v1
+        uses: freight-hub/action-tag-bump-version@v1.1
         with:
           build_number: ${{ github.run_number }}
           github_secret: ${{ secrets.GITHUB_TOKEN }}

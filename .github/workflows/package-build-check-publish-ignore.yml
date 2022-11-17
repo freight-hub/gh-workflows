@@ -2,14 +2,12 @@
 name: "[PR] Build, check and publish"
 
 on:
-  pull_request:
-    types: [synchronize]
-    branches:
-      - main
-    paths-ignore:
-      - '.github/workflows/**'
-      - 'src/**'
-      - 'yarn.lock'
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+      VERDACCIO_FORTO_IO_TOKEN:
+        required: true
 
 jobs:
   pre-release:

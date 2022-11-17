@@ -1,11 +1,12 @@
 name: "[Main] Build, check and publish"
 
 on:
-  pull_request:
-    types:
-      - closed
-    branches:
-      - main
+  workflow_call:
+    secrets:
+      GITHUB_TOKEN:
+        required: true
+      VERDACCIO_FORTO_IO_TOKEN:
+        required: true
 
 env:
   VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
