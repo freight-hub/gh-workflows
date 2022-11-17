@@ -1,0 +1,21 @@
+# This workflow will trigger, but only add the status check after the CI check has run
+name: "[PR] Build, check and publish"
+
+on:
+  pull_request:
+    types: [synchronize]
+    branches:
+      - main
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'src/**'
+      - 'yarn.lock'
+
+jobs:
+  pre-release:
+    # This name needs to match the name in build-check-publish
+    name: Publish pre-release version
+    runs-on: ubuntu-latest
+    if: github.event.head_commit.message == '[skip ci] Bump next stable version'
+    steps:
+      - run: 'echo "No build required"'

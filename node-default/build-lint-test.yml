@@ -1,0 +1,21 @@
+name: "[PR] Build, lint and test"
+
+on:
+  pull_request:
+    types: [labeled, opened, reopened, synchronize]
+    branches:
+      - main
+
+env:
+  VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
+
+jobs:
+  pre-release:
+    name: Build - Lint Check - Test
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - run: yarn install --frozen-lockfile
+      - run: yarn format:check
+      - run: yarn build
+      - run: yarn test:ci

@@ -1,0 +1,37 @@
+name: "[PR] Build, check and publish"
+
+on:
+  pull_request:
+    types: [labeled, opened, reopened, synchronize]
+    branches:
+      - main
+    paths:
+      - '.github/workflows/**'
+      - 'src/**'
+      - 'yarn.lock'
+
+env:
+  VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
+
+jobs:
+  pre-release:
+    name: Publish pre-release version
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - name: bump-version-from-tag
+        id: tag
+        uses: freight-hub/action-tag-bump-version@v1
+        with:
+          build_number: ${{ github.run_number }}
+          github_secret: ${{ secrets.GITHUB_TOKEN }}
+          fallback_tag: 0.0.1
+      - run: yarn version --new-version ${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+      - run: yarn publish
+      - run: yarn version --new-version ${{ steps.tag.outputs.new_version }} --no-git-tag-version
+      - name: commit-stable-version-change
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: '[skip ci] Bump next stable version'

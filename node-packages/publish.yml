@@ -1,0 +1,31 @@
+name: "[Main] Build, check and publish"
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+env:
+  VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
+
+jobs:
+  publish-main:
+    if: github.event.pull_request.merged == 'true'
+    name: Publish main version
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+      - run: yarn publish
+      - name: get-npm-version
+        uses: jaywcjlove/github-action-package@main
+        id: package-info
+      - name: create-release
+        uses: freight-hub/action-create-release@v1
+        with:
+          tag: ${{ steps.package-info.outputs.version }}
+          github_secret: ${{ secrets.GITHUB_TOKEN }}
+
