@@ -4,8 +4,7 @@ on:
   workflow_call:
     inputs:
       use-pat:
-        required: true
-        type: boolean
+        type: string
     secrets:
       VERDACCIO_FORTO_IO_TOKEN:
         required: true
@@ -21,9 +20,9 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
-        if: ${{ inputs.use-pat }} == true
+        if: ${{ inputs.use-pat == 'true' }}
       - uses: actions/checkout@v3
-        if: ${{ inputs.use-pat }} != true
+        if: ${{ inputs.use-pat != 'true' }}
         with:
           token: {{ secrets.pat-token }}
       - name: bump-version-from-tag
