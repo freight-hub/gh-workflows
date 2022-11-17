@@ -30,4 +30,4 @@ jobs:
       - name: commit-stable-version-change
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: '[skip ci] Update package.json to next stable version'
+          commit_message: '[BUMP] Update package.json to next stable version'
