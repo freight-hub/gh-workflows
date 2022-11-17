@@ -9,6 +9,7 @@ jobs:
     # This name needs to match the name in build-check-publish
     name: Publish pre-release version
     runs-on: ubuntu-latest
-    if: github.event.head_commit.message == '[skip ci] Bump next stable version'
+    # Commit message must be same as `package-build-check-publish.yml`
+    if: github.event.head_commit.message == '[BUMP] Update package.json to next stable version'
     steps:
       - run: 'echo "No build required"'
