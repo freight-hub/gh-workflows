@@ -2,9 +2,14 @@ name: "[PR] Build, check and publish"
 
 on:
   workflow_call:
+    use_pat:
+      required: true
+      type: boolean
     secrets:
       VERDACCIO_FORTO_IO_TOKEN:
         required: true
+      pat_token:
+        required: false
 
 env:
   VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
@@ -15,6 +20,11 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+        if: use_pat == true
+      - uses: actions/checkout@v3
+        if: use_pat != true
+        with:
+          token: {{ secrets.pat_token }}
       - name: bump-version-from-tag
         id: tag
         uses: freight-hub/action-tag-bump-version@v1.2
