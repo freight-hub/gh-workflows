@@ -10,7 +10,7 @@ env:
   VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
 
 jobs:
-  pre-release:
+  build-lint-test:
     name: Build - Lint Check - Test
     runs-on: ubuntu-22.04
     steps:
