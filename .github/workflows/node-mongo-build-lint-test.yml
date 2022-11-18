@@ -1,0 +1,43 @@
+name: "[PR] Build, lint and test (Mongo)"
+
+on:
+  workflow_call:
+    secrets:
+      VERDACCIO_FORTO_IO_TOKEN:
+        required: true
+
+env:
+  VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
+
+jobs:
+  build-lint-test:
+    name: Build - Lint Check - Test
+    runs-on: ubuntu-22.04
+    services:
+      mongo:
+        image: mongo:6
+        ports:
+          - 27017:27017
+        env:
+          MONGO_INITDB_ROOT_USERNAME: root
+          MONGO_INITDB_ROOT_PASSWORD: integration
+          MONGO_INITDB_DATABASE: integration-db
+        options: >-
+          --health-cmd "echo 'db.runCommand("ping").ok' | mongosh --quiet"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --name mongo
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn format:check
+      - run: yarn lint
+      - run: yarn build
+      - run: yarn test --ci --coverage
+        env:
+          MONGO__URI: mongodb://root:integration@127.0.0.1:27017/integration-db?authSource=admin
