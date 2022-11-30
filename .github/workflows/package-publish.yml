@@ -5,6 +5,8 @@ on:
     secrets:
       VERDACCIO_FORTO_IO_TOKEN:
         required: true
+      SLACK_PACKAGE_WEBHOOK_URL:
+        required: true
 
 env:
   VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
@@ -30,4 +32,11 @@ jobs:
         with:
           tag: ${{ steps.package-info.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Notify slack
+        id: slack
+        uses: freight-hub/action-slack-notify@v1.1
+        with:
+          slack_webhook_url: ${{ secrets.SLACK_PACKAGE_WEBHOOK_URL }}
+          message: ${{ steps.package-info.outputs.name }}:${{ steps.package-info.outputs.version }} was released!
+          is_markdown: false
 
