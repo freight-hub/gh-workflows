@@ -32,14 +32,11 @@ jobs:
 #        with:
 #          tag: ${{ steps.package-info.outputs.version }}
 #          token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_CHANNEL: package-releases
-          SLACK_COLOR: good
-          SLACK_ICON: https://github.com/freight-hub.png?size=48
-          SLACK_MESSAGE: 'Post Content :rocket:'
-          SLACK_TITLE: ${{ steps.package-info.outputs.name }}:${{ steps.package-info.outputs.version }} published!
-          SLACK_USERNAME: forto-bot
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      - name: Notify slack
+        id: slack
+        uses: freight-hub/action-slack-notify@v1.1
+        with:
+          slack_webhook_url: ${{ secrets.SLACK_PACKAGE_WEBHOOK_URL }}
+          message: 'hello channel!'
+          is_markdown: false
 
