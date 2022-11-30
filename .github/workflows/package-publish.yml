@@ -21,22 +21,22 @@ jobs:
         with:
           node-version: 16
           cache: 'yarn'
-#      - run: yarn install --frozen-lockfile
-#      - run: yarn build
-#      - run: yarn publish
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+      - run: yarn publish
       - name: get-npm-version
         uses: jaywcjlove/github-action-package@main
         id: package-info
-#      - name: create-release
-#        uses: freight-hub/action-create-release@v1.1
-#        with:
-#          tag: ${{ steps.package-info.outputs.version }}
-#          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: create-release
+        uses: freight-hub/action-create-release@v1.1
+        with:
+          tag: ${{ steps.package-info.outputs.version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Notify slack
         id: slack
         uses: freight-hub/action-slack-notify@v1.1
         with:
           slack_webhook_url: ${{ secrets.SLACK_PACKAGE_WEBHOOK_URL }}
-          message: 'hello channel!'
+          message: ${{ steps.package-info.outputs.name }}:${{ steps.package-info.outputs.version }} was released!
           is_markdown: false
 
