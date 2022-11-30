@@ -5,7 +5,7 @@ on:
     secrets:
       VERDACCIO_FORTO_IO_TOKEN:
         required: true
-      SLACK_WEBHOOK:
+      SLACK_PACKAGE_WEBHOOK_URL:
         required: true
 
 env:
