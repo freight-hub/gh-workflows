@@ -24,7 +24,7 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Approve PR and enable auto-merge
         # Explicitly opt into major version updates.
-        if: ${{ steps.dependabot-metadata.outputs.update-type != "version-update:semver-major" || inputs.ALLOW_MAJOR == true }}
+        if: steps.dependabot-metadata.outputs.update-type != "version-update:semver-major"
         # Run these concurrently to save execution time
         run: gh pr review --approve "$PR_URL" & gh pr merge --auto --squash "$PR_URL"
         env:
