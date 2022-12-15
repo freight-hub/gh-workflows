@@ -7,6 +7,10 @@ on:
       PR_URL:
         required: true
         type: string
+      ALLOW_MAJOR:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   approve-dependabot:
@@ -18,13 +22,11 @@ jobs:
         uses: dependabot/fetch-metadata@v1.1.1
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-      - name: Approve a PR
-        run: gh pr review --approve "$PR_URL"
-        env:
-          PR_URL: ${{ inputs.PR_URL}}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Enable auto-merge for Dependabot PRs
-        run: gh pr merge --auto --squash "$PR_URL"
+      - name: Approve PR and enable auto-merge
+        # Explicitly opt into major version updates.
+        if: steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major' || inputs.ALLOW_MAJOR == true
+        # Run these concurrently to save execution time
+        run: gh pr review --approve "$PR_URL" & gh pr merge --auto --squash "$PR_URL"
         env:
           PR_URL: ${{ inputs.PR_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
