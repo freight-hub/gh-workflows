@@ -1,0 +1,32 @@
+# Based on https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions#approve-a-pull-request
+name: Dependabot auto-approve
+
+on: 
+  workflow_call:
+    inputs:
+      PR_URL:
+        required: true
+        type: string
+      ALLOW_MAJOR:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  approve-dependabot:
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v1.1.1
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Approve PR and enable auto-merge
+        # Explicitly opt into major version updates.
+        if: steps.dependabot-metadata.outputs.update-type != 'version-update:semver-major' || inputs.ALLOW_MAJOR == true
+        # Run these concurrently to save execution time
+        run: gh pr review --approve "$PR_URL" & gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ inputs.PR_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
