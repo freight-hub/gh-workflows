@@ -94,3 +94,27 @@ jobs:
     uses: freight-hub/gh-workflows/.github/workflows/package-publish-main.yml@main
     secrets: inherit
 ```
+
+## node-localstack-build-lint-test.yml
+
+Will add the localstack docker image to the testing environment.
+You can provide a Makefile with an install script called `aws-setup` to be executed
+before the tests will run. AWS-CLI will be installed.
+
+### Usage:
+
+```yaml
+name: "Build test with localStack"
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+
+jobs:
+  publish-main:
+    uses: freight-hub/gh-workflows/.github/workflows/node-localstack-build-lint-test.yml@main
+    secrets: inherit
+```

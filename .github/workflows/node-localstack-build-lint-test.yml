@@ -1,0 +1,52 @@
+name: "[PR] Build, lint and test (Localstack)"
+
+on:
+  workflow_call:
+    secrets:
+      VERDACCIO_FORTO_IO_TOKEN:
+        required: true
+
+env:
+  VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
+
+jobs:
+  build-lint-test:
+    name: Build - Lint Check - Test
+    runs-on: ubuntu-22.04
+    services:
+      mongo:
+        image: localstack/localstack:latest
+        ports:
+          - 4566-4597:4566-4597
+        env:
+          AWS_DEFAULT_REGION: eu-west-1
+          EDGE_PORT: 4566
+          SERVICES: sqs,sns
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn install --frozen-lockfile
+      - run: yarn format:check
+      - run: yarn lint
+      - run: yarn build
+      - name: Install AWS CLI v2
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
+          unzip -q /tmp/awscliv2.zip -d /tmp
+          rm /tmp/awscliv2.zip
+          sudo /tmp/aws/install --update
+          rm -rf /tmp/aws/
+      - name: Check for makeFile
+        id: file_check
+        run: |
+          if git status -s | grep -x "** [Makefile]"; then
+            echo "check_result=true" >> $GITHUB_OUTPUT
+          else
+            echo "check_result=false" >> $GITHUB_OUTPUT
+          fi
+      - name: execute Makefile to create queues
+        run: make aws-setup
+      - run: yarn test --ci --coverage
