@@ -14,7 +14,7 @@ jobs:
     name: Build - Lint Check - Test
     runs-on: ubuntu-22.04
     services:
-      mongo:
+      localstack:
         image: localstack/localstack:latest
         ports:
           - 4566-4597:4566-4597
@@ -39,14 +39,12 @@ jobs:
           rm /tmp/awscliv2.zip
           sudo /tmp/aws/install --update
           rm -rf /tmp/aws/
-      - name: Check for makeFile
-        id: file_check
-        run: |
-          if git status -s | grep -x "** [Makefile]"; then
-            echo "check_result=true" >> $GITHUB_OUTPUT
-          else
-            echo "check_result=false" >> $GITHUB_OUTPUT
-          fi
-      - name: execute Makefile to create queues
+      - name: "Check for Makefile"
+        uses: andstor/file-existence-action@v1
+        id: check_files
+        with:
+          files: "Makefile"
+      - name: execute Makefile aws-setup
+        if: steps.check_files.outputs.files_exists == 'true'
         run: make aws-setup
       - run: yarn test --ci --coverage
