@@ -40,3 +40,6 @@ jobs:
           sudo /tmp/aws/install --update
           rm -rf /tmp/aws/
       - run: yarn test --ci --coverage
+        env:
+          AWS_SECRET_ACCESS_KEY: 'ignore_me'
+          AWS_ACCESS_KEY_ID: 'ignore_me'
