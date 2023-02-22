@@ -39,6 +39,7 @@ jobs:
           rm /tmp/awscliv2.zip
           sudo /tmp/aws/install --update
           rm -rf /tmp/aws/
+          /usr/local/bin/aws --version
       - run: yarn test --ci --coverage
         env:
           AWS_SECRET_ACCESS_KEY: 'ignore_me'
