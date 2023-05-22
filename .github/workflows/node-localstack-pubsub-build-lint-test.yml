@@ -26,7 +26,6 @@ jobs:
         image: gcr.io/google.com/cloudsdktool/cloud-sdk:316.0.0-emulators
         ports:
           - "8085:8085"
-        entrypoint: gcloud beta emulators pubsub start --project test-project --host-port 0.0.0.0:8085
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -37,6 +36,8 @@ jobs:
       - run: yarn format:check
       - run: yarn lint
       - run: yarn build
+      - name: Install gcloud PubSub Emulator
+      - run: gcloud beta emulators pubsub start --project test-project --host-port 0.0.0.0:8085
       - name: Install AWS CLI v2
         run: |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
