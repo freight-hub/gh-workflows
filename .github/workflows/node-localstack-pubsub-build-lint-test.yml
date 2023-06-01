@@ -40,9 +40,6 @@ jobs:
         uses: google-github-actions/setup-gcloud@v0
         with:
           install_components: 'beta,pubsub-emulator'
-      - name: 'Start Pub/Sub emulator'
-        run: |
-          gcloud beta emulators pubsub start --project test-project --host-port 0.0.0.0:8085 &
       - name: Install AWS CLI v2
         run: |
           curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
