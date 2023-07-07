@@ -19,7 +19,7 @@ env:
   VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
 
 jobs:
-  pre-release:
+  build-spec:
     name: Publish pre-release version
     runs-on: ubuntu-22.04
     steps:
@@ -30,6 +30,7 @@ jobs:
         with:
           node-version: 16
           cache: 'yarn'
+      - run: yarn build
       - run: yarn ${{ inputs.COMMAND }}
       - uses: technote-space/get-diff-action@v6
         with:
