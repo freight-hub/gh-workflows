@@ -30,6 +30,7 @@ jobs:
         with:
           node-version: 16
           cache: 'yarn'
+      - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn ${{ inputs.COMMAND }}
       - uses: technote-space/get-diff-action@v6
