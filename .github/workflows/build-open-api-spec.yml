@@ -1,0 +1,43 @@
+name: "[PR] Build open-api-spec"
+
+on:
+  workflow_call:
+    inputs:
+      COMMAND:
+        required: false
+        type: string
+        default: 'generate:spec'
+      FILE_PATH:
+        required: false
+        type: string
+        default: 'postman/schemas/index.json'
+    secrets:
+      token:
+        required: true
+
+env:
+  VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
+
+jobs:
+  pre-release:
+    name: Publish pre-release version
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.token }}
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          cache: 'yarn'
+      - run: yarn ${{ inputs.COMMAND }}
+      - uses: technote-space/get-diff-action@v6
+        with:
+          FILES: |
+              ${{ inputs.FILE_PATH }}
+      - name: commit-open-api-spec
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'updated open-api specification'
+        if: env.GIT_DIFF
+
