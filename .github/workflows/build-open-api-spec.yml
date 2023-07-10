@@ -60,5 +60,5 @@ jobs:
         run: npm install bump-cli
         if: inputs.DEPLOY_BUMP_SPEC
       - name: deploy openAPI specifiction from file
-        run: npm exec -- bump deploy ${{ inputs.FILE_PATH }} -d ${{ inputs.PROJECT_NAME }} -t ${{ inputs.BUMP_TOKEN }} --hub ${{ inputs.BUMP_HUB_ID }} --auto-create
+        run: npm exec -- bump deploy ${{ inputs.FILE_PATH }} -d ${{ inputs.PROJECT_NAME }} -t ${{ secrets.BUMP_TOKEN }} --hub ${{ inputs.BUMP_HUB_ID }} --auto-create
         if: inputs.DEPLOY_BUMP_SPEC
