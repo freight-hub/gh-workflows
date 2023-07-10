@@ -11,11 +11,22 @@ on:
         required: false
         type: string
         default: 'postman/schemas/index.json'
+      BUMP_PROJECT_NAME:
+        required: false
+        type: string
+      BUMP_HUB_ID:
+        required: false
+        type: string
+      DEPLOY_BUMP_SPEC:
+        required: false
+        type: boolean
     secrets:
       token:
         required: true
       VERDACCIO_FORTO_IO_TOKEN:
         required: true
+      BUMP_TOKEN:
+        required: false
 
 env:
   VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
@@ -45,4 +56,6 @@ jobs:
           commit_options: '--no-verify'
           file_pattern: ${{ inputs.FILE_PATH }}
         if: env.GIT_DIFF
-
+      - name: deploy-bump
+        run: npm exec -- bump deploy ${{ inputs.FILE_PATH }} -d ${{ inputs.PROJECT_NAME }} -t ${{ inputs.BUMP_TOKEN }} --hub ${{ inputs.BUMP_HUB_ID }} --auto-create
+        if: inputs.DEPLOY_BUMP_SPEC
