@@ -5,6 +5,12 @@ on:
     secrets:
       VERDACCIO_FORTO_IO_TOKEN:
         required: true
+    inputs:
+      LOCALSTACK_IMAGE_TAG:
+        description: 'Localstack version to use'
+        required: false
+        type: string
+        default: 'latest'
 
 env:
   VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
@@ -15,7 +21,7 @@ jobs:
     runs-on: ubuntu-22.04
     services:
       localstack:
-        image: localstack/localstack:latest
+        image: localstack/localstack:${{ inputs.LOCALSTACK_IMAGE_TAG }}
         ports:
           - 4566-4597:4566-4597
         env:
