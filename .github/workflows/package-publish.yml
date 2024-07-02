@@ -29,16 +29,12 @@ jobs:
         id: package-info
       - name: create-release
         uses: freight-hub/action-create-release@v1.1
-        permissions:
-            contents: write
         with:
           tag: ${{ steps.package-info.outputs.version }}
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Notify slack
         id: slack
         uses: freight-hub/action-slack-notify@v1.1
-        permissions:
-            contents: write
         with:
           slack_webhook_url: ${{ secrets.SLACK_PACKAGE_WEBHOOK_URL }}
           message: ${{ steps.package-info.outputs.name }}:${{ steps.package-info.outputs.version }} was released!
