@@ -26,8 +26,6 @@ jobs:
       - name: bump-version-from-tag
         id: tag
         uses: freight-hub/action-tag-bump-version@v1.3
-        permissions:
-            contents: write
         with:
           build_number: ${{ github.run_number }}
           token: ${{ secrets.GITHUB_TOKEN }}
