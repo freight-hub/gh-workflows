@@ -1,13 +1,7 @@
 name: "[PR] Build, lint and test"
 
 on:
-  workflow_call:
-    secrets:
-      VERDACCIO_FORTO_IO_TOKEN:
-        required: true
-
-env:
-  VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
+  workflow_call
 
 jobs:
   build-lint-test:
@@ -15,6 +9,8 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+      - name: 'Call Authentication Workflow'
+        uses: freight-hub/gh-workflows/.github/workflows/npm-auth.yml@main
       - uses: actions/setup-node@v3
         with:
           node-version: 20

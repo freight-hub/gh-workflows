@@ -14,11 +14,6 @@ on:
     secrets:
       token:
         required: true
-      VERDACCIO_FORTO_IO_TOKEN:
-        required: true
-
-env:
-  VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
 
 jobs:
   build-spec:
@@ -28,6 +23,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.token }}
+      - name: 'Call Authentication Workflow'
+        uses: freight-hub/gh-workflows/.github/workflows/npm-auth.yml@main
       - uses: actions/setup-node@v3
         with:
           node-version: 20

@@ -41,6 +41,8 @@ on:
 
 jobs:
   pre-release:
+    permissions:
+      id-token: write
     uses: freight-hub/gh-workflows/.github/workflows/package-build-check-publish.yml@main
     secrets:
       VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
@@ -70,6 +72,8 @@ on:
 
 jobs:
   pre-release:
+    permissions:
+      id-token: write
     uses: freight-hub/gh-workflows/.github/workflows/package-build-check-publish-ignore.yml@main
 ```
 
@@ -91,6 +95,8 @@ on:
 
 jobs:
   publish-main:
+    permissions:
+      id-token: write
     uses: freight-hub/gh-workflows/.github/workflows/package-publish-main.yml@main
     secrets: inherit
 ```
@@ -115,6 +121,8 @@ on:
 
 jobs:
   publish-main:
+    permissions:
+      id-token: write
     uses: freight-hub/gh-workflows/.github/workflows/node-localstack-build-lint-test.yml@main
     secrets: inherit
 ```

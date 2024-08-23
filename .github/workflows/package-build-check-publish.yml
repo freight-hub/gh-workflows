@@ -7,6 +7,17 @@ on:
         required: true
       token:
         required: true
+    inputs:
+      publish-to-gar:
+        description: 'Boolean flag to control publishing flow'
+        required: false
+        default: false
+        type: boolean
+      gar-registry:
+        description: 'The registry to publish to'
+        required: false
+        default: npm-internal-release
+        type: string
 
 env:
   VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
@@ -19,6 +30,8 @@ jobs:
       - uses: actions/checkout@v3
         with:
           token: ${{ secrets.token }}
+      - name: 'Call Authentication Workflow'
+        uses: freight-hub/gh-workflows/.github/workflows/npm-auth.yml@main
       - uses: actions/setup-node@v3
         with:
           node-version: 20
@@ -41,4 +54,14 @@ jobs:
       - run: yarn build
       - run: yarn version --new-version ${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
       - run: yarn publish --tag ${{ steps.tag.outputs.pre_release_version }}
-
+      - name: Publish to npm
+        if: ${{ inputs.publish-to-gar }}
+        run: |
+          echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=${FORTO_ARTIFACTS_TOKEN}" >> .npmrc
+          yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }} --tag ${{ steps.tag.outputs.pre_release_version }}
+      - if: ${{ !inputs.publish-to-gar }}
+        run: |
+          echo "//verdaccio.forto.io/:_authToken=${VERDACCIO_FORTO_IO_TOKEN}" >> .npmrc
+          yarn publish --registry https://verdaccio.forto.io --tag ${{ steps.tag.outputs.pre_release_version }}
+        
+  
