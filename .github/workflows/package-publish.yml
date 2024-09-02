@@ -2,6 +2,17 @@ name: "[Main] Build, check and publish"
 
 on:
   workflow_call:
+    inputs:
+      publish-to-gar:
+        description: 'Boolean flag to control publishing'
+        required: false
+        default: false
+        type: boolean
+      gar-registry:
+        description: 'The registry to publish to'
+        required: false
+        default: npm-internal-release
+        type: string
     secrets:
       VERDACCIO_FORTO_IO_TOKEN:
         required: true
@@ -17,13 +28,23 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v3
+      - name: 'Call Authentication Workflow'
+        uses: freight-hub/gh-workflows/.github/workflows/npm-auth.yml@main
       - uses: actions/setup-node@v3
         with:
           node-version: 20
           cache: 'yarn'
       - run: yarn install --frozen-lockfile
       - run: yarn build
-      - run: yarn publish
+      - name: Publish to npm
+        if: ${{ inputs.publish-to-gar }}
+        run: |
+          echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=${FORTO_ARTIFACTS_TOKEN}" >> .npmrc
+          yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}
+      - if: ${{ !inputs.publish-to-gar }}
+        run: |
+          echo "//verdaccio.forto.io/:_authToken=${VERDACCIO_FORTO_IO_TOKEN}" >> .npmrc
+          yarn publish --registry https://verdaccio.forto.io
       - name: get-npm-version
         uses: jaywcjlove/github-action-package@main
         id: package-info
