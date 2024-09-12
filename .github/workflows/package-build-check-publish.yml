@@ -74,6 +74,6 @@ jobs:
       - if: ${{ !inputs.publish-to-gar }}
         run: |
           echo "//verdaccio.forto.io/:_authToken=${VERDACCIO_FORTO_IO_TOKEN}" >> .npmrc
-          yarn publish --registry https://verdaccio.forto.io --tag ${{ steps.tag.outputs.pre_release_version }}
+          npm publish --registry https://verdaccio.forto.io --tag ${{ steps.tag.outputs.pre_release_version }}
         
   
