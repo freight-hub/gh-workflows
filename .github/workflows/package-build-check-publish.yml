@@ -65,8 +65,8 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn version --new-version ${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
-      - name:
-        command: |
+      - name: Setup verdaccio for publish
+        run: |
           rm -f ~/.npmrc .npmrc
           echo "always-auth=true" >> ~/.npmrc
           echo '//verdaccio.forto.io/:_authToken="'${VERDACCIO_FORTO_IO_TOKEN}'"' >> ~/.npmrc
