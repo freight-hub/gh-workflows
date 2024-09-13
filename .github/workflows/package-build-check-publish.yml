@@ -69,9 +69,11 @@ jobs:
         run: |
           rm -f ~/.npmrc .npmrc
           echo "always-auth=true" >> ~/.npmrc
-          echo '//verdaccio.forto.io/:_authToken="'${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}'"' >> ~/.npmrc
-          echo "registry=https://verdaccio.forto.io" >> ~/.npmrc
-          export VERDACCIO_FORTO_IO_TOKEN="${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}"
+          echo '//verdaccio.forto.io/:_authToken="${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}"' >> ~/.npmrc
+          echo "registry=https://verdaccio.forto.io" >> ~/.npmrc      - name: Verify VERDACCIO_FORTO_IO_TOKEN
+        run: |
+          echo "VERDACCIO_FORTO_IO_TOKEN=${VERDACCIO_FORTO_IO_TOKEN}"
+          cat ~/.npmrc
       - run: |
           yarn publish --tag ${{ steps.tag.outputs.pre_release_version }}
       - name: Publish to npm
