@@ -71,7 +71,7 @@ jobs:
           echo "always-auth=true" >> ~/.npmrc
           echo '//verdaccio.forto.io/:_authToken="${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}"' >> ~/.npmrc
           echo "registry=https://verdaccio.forto.io" >> ~/.npmrc      - name: Verify VERDACCIO_FORTO_IO_TOKEN
-        run: |
+      - run: |
           echo "VERDACCIO_FORTO_IO_TOKEN=${VERDACCIO_FORTO_IO_TOKEN}"
           cat ~/.npmrc
       - run: |
