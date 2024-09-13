@@ -61,29 +61,23 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: 'Update package.json to next stable version'
-          file_pattern: 'package.json'
       # set the publish the release version
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn version --new-version ${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
-      - name: Publish to tag & npm (verdaccio)
+      - name: Publish to tag & npm
         if: ${{ inputs.publish-to-gar }}
         run: |
           echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=${FORTO_ARTIFACTS_TOKEN}" >> .npmrc
           yarn publish --tag ${{ steps.tag.outputs.pre_release_version }}
           yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }} --tag ${{ steps.tag.outputs.pre_release_version }}
-      - uses: actions/setup-node@v3
-        if: ${{ !inputs.publish-to-gar }}
-        with:
-          node-version: 20
-          cache: 'yarn'
-          token: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
-          registry-url: 'https://verdaccio.forto.io'
       - if: ${{ !inputs.publish-to-gar }}
-        name: Publish to tag & npm (gar)
         run: |
-          # rm -f ~/.npmrc .npmrc
-          echo "always-auth=true\n//verdaccio.forto.io/:_authToken=\${VERDACCIO_FORTO_IO_TOKEN}\n@freighthub:registry=https://verdaccio.forto.io\nregistry=https://verdaccio.forto.io/" >> .npmrc
+          rm -f ~/.npmrc .npmrc .yarnrc
+          echo "always-auth=true" >> ~/.npmrc
+          echo '//verdaccio.forto.io/:_authToken=${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}' >> ~/.npmrc
+          echo "registry=https://verdaccio.forto.io" >> ~/.npmrc
+          echo "VERDACCIO_FORTO_IO_TOKEN=${VERDACCIO_FORTO_IO_TOKEN}"
           yarn publish --tag ${{ steps.tag.outputs.pre_release_version }} --non-interactive
           yarn publish --registry https://verdaccio.forto.io --tag ${{ steps.tag.outputs.pre_release_version }}
         
