@@ -74,11 +74,11 @@ jobs:
       - if: ${{ !inputs.publish-to-gar }}
         run: |
           rm -f ~/.npmrc .npmrc
-          echo "always-auth=true" >> .npmrc
-          echo '//verdaccio.forto.io/:_authToken="${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}"' >> .npmrc
-          echo "registry=https://verdaccio.forto.io" >> .npmrc
+          echo "always-auth=true" >> ~/.npmrc
+          echo '//verdaccio.forto.io/:_authToken=${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}' >> ~/.npmrc
+          echo "registry=https://verdaccio.forto.io" >> ~/.npmrc
           echo "VERDACCIO_FORTO_IO_TOKEN=${VERDACCIO_FORTO_IO_TOKEN}"
-          yarn publish --tag ${{ steps.tag.outputs.pre_release_version }}
+          yarn publish --tag ${{ steps.tag.outputs.pre_release_version }} --non-interactive
           yarn publish --registry https://verdaccio.forto.io --tag ${{ steps.tag.outputs.pre_release_version }}
         
   
