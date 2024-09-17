@@ -58,17 +58,17 @@ jobs:
       # set the publish the release version
       - run: yarn install --frozen-lockfile
       - run: yarn build
-      - run: yarn version --new-version ${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
-      - run: npm publish --tag "${{ steps.tag.outputs.pre_release_version }}"
+      - run: yarn version --new-version pre-${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
+      - run: npm publish --tag pre-${{ steps.tag.outputs.pre_release_version }}
       - name: Publish to npm
         if: ${{ inputs.publish-to-gar }}
         run: |
           echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=${FORTO_ARTIFACTS_TOKEN}" >> .npmrc
-          yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }} --tag ${{ steps.tag.outputs.pre_release_version }}
+          yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }} --tag pre-${{ steps.tag.outputs.pre_release_version }}
       - if: ${{ !inputs.publish-to-gar }}
         run: |
           echo "//verdaccio.forto.io/:_authToken=${VERDACCIO_FORTO_IO_TOKEN}" >> .npmrc
-          npm publish --registry https://verdaccio.forto.io --tag "${{ steps.tag.outputs.pre_release_version }}"
+          npm publish --registry https://verdaccio.forto.io --tag pre-${{ steps.tag.outputs.pre_release_version }}
       # set the new_version on package.json
       - run: yarn version --new-version ${{ steps.tag.outputs.new_version }} --no-git-tag-version
       - name: commit-stable-version-change
