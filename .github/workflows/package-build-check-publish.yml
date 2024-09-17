@@ -59,7 +59,6 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn version --new-version ${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
-      - run: npm publish --tag pre-${{ steps.tag.outputs.pre_release_version }}
       - name: Publish to npm
         if: ${{ inputs.publish-to-gar }}
         run: |
