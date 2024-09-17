@@ -55,12 +55,6 @@ jobs:
           build_number: ${{ github.run_number }}
           token: ${{ secrets.GITHUB_TOKEN }}
           fallback_tag: 0.0.1
-      # set the new_version on package.json
-      - run: yarn version --new-version ${{ steps.tag.outputs.new_version }} --no-git-tag-version
-      - name: commit-stable-version-change
-        uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: 'Update package.json to next stable version'
       # set the publish the release version
       - run: yarn install --frozen-lockfile
       - run: yarn build
@@ -74,6 +68,11 @@ jobs:
       - if: ${{ !inputs.publish-to-gar }}
         run: |
           echo "//verdaccio.forto.io/:_authToken=${VERDACCIO_FORTO_IO_TOKEN}" >> .npmrc
-          npm publish --registry https://verdaccio.forto.io --tag ${{ steps.tag.outputs.pre_release_version }}
-        
+          npm publish --registry https://verdaccio.forto.io --tag "${{ steps.tag.outputs.pre_release_version }}"
+      # set the new_version on package.json
+      - run: yarn version --new-version ${{ steps.tag.outputs.new_version }} --no-git-tag-version
+      - name: commit-stable-version-change
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'Update package.json to next stable version'
   
