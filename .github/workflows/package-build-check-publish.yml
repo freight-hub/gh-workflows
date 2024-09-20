@@ -65,15 +65,14 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn version --new-version ${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
-      - run: npm publish --tag ${{ steps.tag.outputs.pre_release_version }}
-      - name: Publish to npm
+      - name: Publish to tag & npm
         if: ${{ inputs.publish-to-gar }}
         run: |
           echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=${FORTO_ARTIFACTS_TOKEN}" >> .npmrc
+          yarn publish --tag ${{ steps.tag.outputs.pre_release_version }}
           yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }} --tag ${{ steps.tag.outputs.pre_release_version }}
       - if: ${{ !inputs.publish-to-gar }}
         run: |
-          echo "//verdaccio.forto.io/:_authToken=${VERDACCIO_FORTO_IO_TOKEN}" >> .npmrc
-          npm publish --registry https://verdaccio.forto.io --tag ${{ steps.tag.outputs.pre_release_version }}
-        
-  
+          rm -f ~/.npmrc .npmrc .yarnrc
+          echo -e "always-auth=true\n//verdaccio.forto.io/:_authToken=\${VERDACCIO_FORTO_IO_TOKEN}\nregistry=https://verdaccio.forto.io" >> ~/.npmrc
+          yarn publish --registry https://verdaccio.forto.io --tag ${{ steps.tag.outputs.pre_release_version }}

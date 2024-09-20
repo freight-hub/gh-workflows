@@ -55,7 +55,8 @@ jobs:
           yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}
       - if: ${{ !inputs.publish-to-gar }}
         run: |
-          echo "//verdaccio.forto.io/:_authToken=${VERDACCIO_FORTO_IO_TOKEN}" >> .npmrc
+          rm -f ~/.npmrc .npmrc .yarnrc
+          echo -e "always-auth=true\n//verdaccio.forto.io/:_authToken=\${VERDACCIO_FORTO_IO_TOKEN}\nregistry=https://verdaccio.forto.io" >> ~/.npmrc
           yarn publish --registry https://verdaccio.forto.io
       - name: get-npm-version
         uses: jaywcjlove/github-action-package@main
