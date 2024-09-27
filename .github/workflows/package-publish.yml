@@ -11,7 +11,7 @@ on:
       publish-to-gar:
         description: 'Boolean flag to control publishing'
         required: false
-        default: false
+        default: true
         type: boolean
       gar-registry:
         description: 'The registry to publish to'

@@ -16,12 +16,12 @@ on:
       publish-to-gar:
         description: 'Boolean flag to control publishing flow'
         required: false
-        default: false
+        default: true
         type: boolean
       gar-registry:
         description: 'The registry to publish to'
         required: false
-        default: npm-internal-release
+        default: npm-internal-canary
         type: string
 
 env:
