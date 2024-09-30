@@ -51,6 +51,7 @@ jobs:
       - name: Publish to npm
         if: ${{ inputs.publish-to-gar }}
         run: |
+          rm -f ~/.npmrc .npmrc .yarnrc
           echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=${FORTO_ARTIFACTS_TOKEN}" >> .npmrc
           yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}
       - if: ${{ !inputs.publish-to-gar }}
