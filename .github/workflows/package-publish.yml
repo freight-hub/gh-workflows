@@ -52,9 +52,9 @@ jobs:
         if: ${{ inputs.publish-to-gar }}
         run: |
           rm -f ~/.npmrc .npmrc .yarnrc
-          echo "always-auth=true" >> ~/.npmrc
-          echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=${FORTO_ARTIFACTS_TOKEN}" >> ~/.npmrc
-          npm publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}
+          echo "FORTO_ARTIFACTS_TOKEN=$(gcloud auth print-access-token)" >> $GITHUB_ENV
+          echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=${FORTO_ARTIFACTS_TOKEN}" >> .npmrc
+          yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}
       - if: ${{ !inputs.publish-to-gar }}
         run: |
           rm -f ~/.npmrc .npmrc .yarnrc

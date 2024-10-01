@@ -61,6 +61,7 @@ jobs:
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: 'Update package.json to next stable version'
+          file_pattern: package.json
       # set the publish the release version
       - run: yarn install --frozen-lockfile
       - run: yarn build
@@ -71,8 +72,7 @@ jobs:
           rm -f ~/.npmrc .npmrc .yarnrc
           echo "FORTO_ARTIFACTS_TOKEN=$(gcloud auth print-access-token)" >> $GITHUB_ENV
           echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=${FORTO_ARTIFACTS_TOKEN}" >> .npmrc
-          npm publish --tag ${{ steps.tag.outputs.pre_release_version }}
-          npm publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }} --tag ${{ steps.tag.outputs.pre_release_version }}
+          yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }} --tag canary
       - if: ${{ !inputs.publish-to-gar }}
         run: |
           rm -f ~/.npmrc .npmrc .yarnrc
