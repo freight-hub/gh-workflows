@@ -45,7 +45,6 @@ jobs:
               TOKEN_FACTORY_PATH,
             } = process.env;
             const idToken = await core.getIDToken(TOKEN_FACTORY_BASE);
-            console.log(btoa(idToken))
             const response = await fetch(`${TOKEN_FACTORY_BASE}${TOKEN_FACTORY_PATH}`, {
               method: 'POST',
               headers: {
