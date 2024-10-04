@@ -79,6 +79,7 @@ jobs:
             if (!response.ok) throw new Error(
               `HTTP ${response.status} from ${TOKEN_FACTORY_PATH}`);
             return text;
+          result-encoding: string
       - name: bump-version-from-tag
         id: tag
         uses: freight-hub/action-tag-bump-version@v1.4
