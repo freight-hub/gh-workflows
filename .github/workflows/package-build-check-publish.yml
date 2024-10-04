@@ -32,6 +32,21 @@ jobs:
     name: Publish pre-release version
     runs-on: ubuntu-22.04
     steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+      # Authenticate to Google Cloud
+      - name: 'Authenticate to Google Cloud'
+        id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          workload_identity_provider: projects/630000710192/locations/global/workloadIdentityPools/github/providers/actions-token
+          service_account: ${{ inputs.service_account }}
+          access_token_lifetime: '600s'
+      - name: 'Set FORTO_ARTIFACTS_TOKEN variable'
+        run: echo "FORTO_ARTIFACTS_TOKEN=$(gcloud auth print-access-token)" >> $GITHUB_ENV
+      # Authenticate to Github via Token Factory
       - name: Fetch Github App token
         id: github-token
         uses: actions/github-script@v7
@@ -54,34 +69,16 @@ jobs:
               body: new URLSearchParams({
                 'contents': 'write',
                 'pull-requests': 'write',
-                // meta:build-url="$CIRCLE_BUILD_URL"
-                // meta:job-name="$CIRCLE_JOB"
-                // meta:git-branch="$CIRCLE_BRANCH"
-                // meta:git-revision="$CIRCLE_SHA1"
               }),
             });
             const text = await response.text();
-            console.log(text);
             if (!response.ok) throw new Error(
-              `HTTP ${response.status} from ${TOKEN_FACTORY_PATH}`);
+              `HTTP ${response.status} from ${TOKEN_FACTORY_PATH}: ${text}`);
             return text;
           result-encoding: string
       - uses: actions/checkout@v4
         with:
           token: ${{ steps.github-token.outputs.result }}
-      - name: 'Authenticate to Google Cloud'
-        id: 'auth'
-        uses: 'google-github-actions/auth@v2'
-        with:
-          workload_identity_provider: projects/630000710192/locations/global/workloadIdentityPools/github/providers/actions-token
-          service_account: ${{ inputs.service_account }}
-          access_token_lifetime: '600s'
-      - name: 'Update .npmrc with new token'
-        run: echo "FORTO_ARTIFACTS_TOKEN=$(gcloud auth print-access-token)" >> $GITHUB_ENV
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'yarn'
       - name: bump-version-from-tag
         id: tag
         uses: freight-hub/action-tag-bump-version@v1.4
