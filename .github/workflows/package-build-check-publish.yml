@@ -48,29 +48,62 @@ jobs:
         with:
           node-version: 20
           cache: 'yarn'
+      - name: Fetch Github App token
+        id: github-token
+        uses: actions/github-script@v7
+        env:
+          TOKEN_FACTORY_BASE: https://gateway.forto.tools/api/github-token-factory
+          TOKEN_FACTORY_PATH: /oidc/github-actions
+        with:
+          script: |
+            const {
+              TOKEN_FACTORY_BASE,
+              TOKEN_FACTORY_PATH,
+            } = process.env;
+            const idToken = await core.getIDToken(TOKEN_FACTORY_URL);
+            const response = await fetch(`${TOKEN_FACTORY_BASE}${TOKEN_FACTORY_PATH}`, {
+              method: 'POST',
+              headers: {
+                'authorization': `Bearer ${idToken}`,
+                'accept': `text/plain`,
+              },
+              body: new URLSearchParams({
+                'contents': 'write',
+                'pull-requests': 'write',
+                // meta:build-url="$CIRCLE_BUILD_URL"
+                // meta:job-name="$CIRCLE_JOB"
+                // meta:git-branch="$CIRCLE_BRANCH"
+                // meta:git-revision="$CIRCLE_SHA1"
+              }),
+            });
+            const text = await response.text();
+            console.log(text);
+            if (!response.ok) throw new Error(
+              `HTTP ${response.status} from ${TOKEN_FACTORY_PATH}`);
+            return text;
       - name: bump-version-from-tag
         id: tag
-        uses: freight-hub/action-tag-bump-version@v1.3
+        uses: freight-hub/action-tag-bump-version@v1.4
         with:
           build_number: ${{ github.run_number }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.github-token.outputs.result }}
           fallback_tag: 0.0.1
       # set the new_version on package.json
       - run: yarn version --new-version ${{ steps.tag.outputs.new_version }} --no-git-tag-version
       - name: commit-stable-version-change
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'Update package.json to next stable version'
           file_pattern: package.json
+          token: ${{ steps.github-token.outputs.result }}
       # set the publish the release version
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn version --new-version ${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
-      - name: Publish to tag & npm
+      - name: Publish and tag on NPM repository
         if: ${{ inputs.publish-to-gar }}
         run: |
           rm -f ~/.npmrc .npmrc .yarnrc
-          echo "FORTO_ARTIFACTS_TOKEN=$(gcloud auth print-access-token)" >> $GITHUB_ENV
           echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=${FORTO_ARTIFACTS_TOKEN}" >> .npmrc
           yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/ --tag canary
       - if: ${{ !inputs.publish-to-gar }}
