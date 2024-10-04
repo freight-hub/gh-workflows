@@ -32,10 +32,6 @@ jobs:
     name: Publish pre-release version
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'yarn'
       # Authenticate to Google Cloud
       - name: 'Authenticate to Google Cloud'
         id: 'auth'
@@ -76,9 +72,15 @@ jobs:
               `HTTP ${response.status} from ${TOKEN_FACTORY_PATH}: ${text}`);
             return text;
           result-encoding: string
+      # Set up the repo
       - uses: actions/checkout@v4
         with:
           token: ${{ steps.github-token.outputs.result }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+      # Detect versioning
       - name: bump-version-from-tag
         id: tag
         uses: freight-hub/action-tag-bump-version@v1.4
@@ -86,17 +88,18 @@ jobs:
           build_number: ${{ github.run_number }}
           token: ${{ steps.github-token.outputs.result }}
           fallback_tag: 0.0.1
-      # set the new_version on package.json
+      # Set the new_version on package.json
       - run: yarn version --new-version ${{ steps.tag.outputs.new_version }} --no-git-tag-version
       - name: commit-stable-version-change
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: 'Update package.json to next stable version'
           file_pattern: package.json
-      # set the publish the release version
+      # Prepare for a versioned release
       - run: yarn install --frozen-lockfile
       - run: yarn build
       - run: yarn version --new-version ${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
+      # Publish a canary release
       - name: Publish and tag on NPM repository
         if: ${{ inputs.publish-to-gar }}
         run: |
