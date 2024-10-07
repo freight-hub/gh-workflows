@@ -23,7 +23,7 @@ jobs:
           EDGE_PORT: 4566
           SERVICES: sqs,sns
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: 'Authenticate to Google Cloud'
         id: 'gcloud'
         uses: 'google-github-actions/auth@v2'
@@ -35,7 +35,7 @@ jobs:
           create_credentials_file: false
       - name: 'Export FORTO_ARTIFACTS_TOKEN variable'
         run: echo "FORTO_ARTIFACTS_TOKEN=${{ steps.gcloud.outputs.access_token }}" >> $GITHUB_ENV
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'yarn'

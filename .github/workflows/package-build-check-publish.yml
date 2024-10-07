@@ -4,7 +4,7 @@ on:
   workflow_call:
     secrets:
       VERDACCIO_FORTO_IO_TOKEN:
-        required: true
+        required: false
       token:
         required: true
     inputs:
@@ -32,7 +32,7 @@ jobs:
     name: Publish pre-release version
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           token: ${{ secrets.token }}
       - name: 'Authenticate to Google Cloud'
@@ -46,13 +46,13 @@ jobs:
           create_credentials_file: false
       - name: 'Export FORTO_ARTIFACTS_TOKEN variable'
         run: echo "FORTO_ARTIFACTS_TOKEN=${{ steps.gcloud.outputs.access_token }}" >> $GITHUB_ENV
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'yarn'
       - name: bump-version-from-tag
         id: tag
-        uses: freight-hub/action-tag-bump-version@v1.3
+        uses: freight-hub/action-tag-bump-version@v1.4
         with:
           build_number: ${{ github.run_number }}
           token: ${{ secrets.GITHUB_TOKEN }}
