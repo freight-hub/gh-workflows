@@ -29,7 +29,7 @@ jobs:
           --health-retries 5
           --name mongo
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: 'Authenticate to Google Cloud'
         id: 'auth'
         uses: 'google-github-actions/auth@v2'
@@ -39,7 +39,7 @@ jobs:
           access_token_lifetime: '600s'
       - name: 'Update .npmrc with new token'
         run: echo "FORTO_ARTIFACTS_TOKEN=$(gcloud auth print-access-token)" >> $GITHUB_ENV
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'yarn'

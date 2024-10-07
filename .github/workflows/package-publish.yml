@@ -20,7 +20,7 @@ on:
         type: string
     secrets:
       VERDACCIO_FORTO_IO_TOKEN:
-        required: true
+        required: false
       SLACK_PACKAGE_WEBHOOK_URL:
         required: true
 
@@ -32,7 +32,7 @@ jobs:
     name: Publish main version
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: 'Authenticate to Google Cloud'
         id: 'auth'
         uses: 'google-github-actions/auth@v2'
@@ -42,7 +42,7 @@ jobs:
           access_token_lifetime: '600s'
       - name: 'Update .npmrc with new token'
         run: echo "FORTO_ARTIFACTS_TOKEN=$(gcloud auth print-access-token)" >> $GITHUB_ENV
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: 'yarn'
@@ -75,4 +75,3 @@ jobs:
           slack_webhook_url: ${{ secrets.SLACK_PACKAGE_WEBHOOK_URL }}
           message: ${{ steps.package-info.outputs.name }}:${{ steps.package-info.outputs.version }} was released!
           is_markdown: false
-
