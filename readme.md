@@ -44,11 +44,6 @@ jobs:
     permissions:
       id-token: write
     uses: freight-hub/gh-workflows/.github/workflows/package-build-check-publish.yml@main
-    secrets:
-      VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
-      # We need to pass the GH token here, as we would like the commit to trigger the pipeline again
-      # to make sure we pass the required action
-      token: ${{ secrets.GH_PAT_FREIGHTBOT }}
 ```
 
 
