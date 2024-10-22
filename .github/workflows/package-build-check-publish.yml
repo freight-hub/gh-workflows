@@ -2,6 +2,9 @@ name: "[PR] Build, check and publish"
 
 on:
   workflow_call:
+    secrets:
+      token:
+        required: false
     inputs:
       service_account:
         description: 'Google Cloud service account'
