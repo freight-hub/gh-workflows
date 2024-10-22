@@ -2,11 +2,6 @@ name: "[PR] Build, check and publish"
 
 on:
   workflow_call:
-    secrets:
-      VERDACCIO_FORTO_IO_TOKEN:
-        required: false
-      token:
-        required: false
     inputs:
       service_account:
         description: 'Google Cloud service account'
@@ -23,9 +18,6 @@ on:
         required: false
         default: npm-internal-canary
         type: string
-
-env:
-  VERDACCIO_FORTO_IO_TOKEN: ${{ secrets.VERDACCIO_FORTO_IO_TOKEN }}
 
 jobs:
   pre-release:
@@ -100,13 +92,7 @@ jobs:
       - run: yarn version --new-version ${{ steps.tag.outputs.pre_release_version }} --no-git-tag-version
       # Publish a canary release
       - name: Publish and tag on NPM repository
-        if: ${{ inputs.publish-to-gar }}
         run: |
           rm -f ~/.npmrc .npmrc .yarnrc
           echo "//europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/:_authToken=\${FORTO_ARTIFACTS_TOKEN}" >> .npmrc
           yarn publish --registry https://europe-west1-npm.pkg.dev/forto-artifacts/${{ inputs.gar-registry }}/ --tag canary
-      - if: ${{ !inputs.publish-to-gar }}
-        run: |
-          rm -f ~/.npmrc .npmrc .yarnrc
-          echo -e "always-auth=true\n//verdaccio.forto.io/:_authToken=\${VERDACCIO_FORTO_IO_TOKEN}\nregistry=https://verdaccio.forto.io" >> ~/.npmrc
-          yarn publish --registry https://verdaccio.forto.io --tag ${{ steps.tag.outputs.pre_release_version }}
