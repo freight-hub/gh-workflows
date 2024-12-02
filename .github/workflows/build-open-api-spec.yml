@@ -25,9 +25,36 @@ jobs:
     name: Build Open API specification
     runs-on: ubuntu-22.04
     steps:
+      # Authenticate to Github via Token Factory
+      - name: Fetch Github App token
+        id: github-token
+        uses: actions/github-script@v7
+        env:
+          TOKEN_FACTORY_BASE: https://gateway.forto.tools/api/github-token-factory
+          TOKEN_FACTORY_PATH: /oidc/github-actions
+        with:
+          script: |
+            const { TOKEN_FACTORY_BASE, TOKEN_FACTORY_PATH } = process.env;
+            const idToken = await core.getIDToken(TOKEN_FACTORY_BASE);
+            const response = await fetch(`${TOKEN_FACTORY_BASE}${TOKEN_FACTORY_PATH}`, {
+              method: 'POST',
+              headers: {
+                'authorization': `Bearer ${idToken}`,
+                'accept': `text/plain`,
+              },
+              body: new URLSearchParams({
+                'contents': 'write',
+                'pull-requests': 'write',
+              }),
+            });
+            const text = await response.text();
+            if (!response.ok) throw new Error(
+              `HTTP ${response.status} from ${TOKEN_FACTORY_PATH}: ${text}`);
+            return text;
+          result-encoding: string
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.token }}
+          token: ${{ steps.github-token.outputs.result }}
       - name: 'Authenticate to Google Cloud'
         id: 'gcloud'
         uses: 'google-github-actions/auth@v2'
