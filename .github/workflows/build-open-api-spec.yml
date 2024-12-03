@@ -31,7 +31,6 @@ jobs:
         uses: freight-hub/get-github-token-action@v1
         with:
           contents: write
-          pull-requests: write
       - uses: actions/checkout@v4
         with:
           token: ${{ steps.github-auth.outputs.token }}
