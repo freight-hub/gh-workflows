@@ -18,7 +18,7 @@ on:
         default: 'gha-workflow@forto-workload-identity.iam.gserviceaccount.com'
     secrets:
       token:
-        required: true
+        required: false
 
 jobs:
   build-spec:
