@@ -18,16 +18,22 @@ on:
         default: 'gha-workflow@forto-workload-identity.iam.gserviceaccount.com'
     secrets:
       token:
-        required: true
+        required: false
 
 jobs:
   build-spec:
     name: Build Open API specification
     runs-on: ubuntu-22.04
     steps:
+      # Authenticate to Github via Token Factory
+      - name: Fetch Github App token
+        id: github-auth
+        uses: freight-hub/get-github-token-action@v1
+        with:
+          contents: write
       - uses: actions/checkout@v4
         with:
-          token: ${{ secrets.token }}
+          token: ${{ steps.github-auth.outputs.token }}
       - name: 'Authenticate to Google Cloud'
         id: 'gcloud'
         uses: 'google-github-actions/auth@v2'
