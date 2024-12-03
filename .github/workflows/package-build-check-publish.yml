@@ -41,35 +41,15 @@ jobs:
         run: echo "FORTO_ARTIFACTS_TOKEN=${{ steps.gcloud.outputs.access_token }}" >> $GITHUB_ENV
       # Authenticate to Github via Token Factory
       - name: Fetch Github App token
-        id: github-token
-        uses: actions/github-script@v7
-        env:
-          TOKEN_FACTORY_BASE: https://gateway.forto.tools/api/github-token-factory
-          TOKEN_FACTORY_PATH: /oidc/github-actions
+        id: github-auth
+        uses: freight-hub/get-github-token-action@v1
         with:
-          script: |
-            const { TOKEN_FACTORY_BASE, TOKEN_FACTORY_PATH } = process.env;
-            const idToken = await core.getIDToken(TOKEN_FACTORY_BASE);
-            const response = await fetch(`${TOKEN_FACTORY_BASE}${TOKEN_FACTORY_PATH}`, {
-              method: 'POST',
-              headers: {
-                'authorization': `Bearer ${idToken}`,
-                'accept': `text/plain`,
-              },
-              body: new URLSearchParams({
-                'contents': 'write',
-                'pull-requests': 'write',
-              }),
-            });
-            const text = await response.text();
-            if (!response.ok) throw new Error(
-              `HTTP ${response.status} from ${TOKEN_FACTORY_PATH}: ${text}`);
-            return text;
-          result-encoding: string
+          contents: write
+          pull-requests: write
       # Set up the repo
       - uses: actions/checkout@v4
         with:
-          token: ${{ steps.github-token.outputs.result }}
+          token: ${{ steps.github-auth.outputs.token }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -80,7 +60,7 @@ jobs:
         uses: freight-hub/action-tag-bump-version@v1.4
         with:
           build_number: ${{ github.run_number }}
-          token: ${{ steps.github-token.outputs.result }}
+          token: ${{ steps.github-auth.outputs.token }}
           fallback_tag: 0.0.1
       # Set the new_version on package.json
       - run: yarn version --new-version ${{ steps.tag.outputs.new_version }} --no-git-tag-version
